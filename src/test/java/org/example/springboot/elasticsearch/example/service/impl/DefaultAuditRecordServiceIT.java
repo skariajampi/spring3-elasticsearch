@@ -51,15 +51,17 @@ class DefaultAuditRecordServiceIT {
     @Test
     void testGetAuditByEntityId() throws DuplicateCorrelationIdException {
         auditService.create(createAudit("12 rules for life", "Jordan Peterson",
-                                        OffsetDateTime.parse("2022-03-03'T'14:33:33+00:00"), "978-0345816023",
-                                        "externalRefId1"));
-        List<AuditRecord> result = auditService.getByEntityId("externalRefId1");
+                                        OffsetDateTime.parse("2022-03-03T14:33:33+00:00"), "978-0345816023",
+                                        "entityId",
+                                        "externalRefId1",
+                                        "userId"));
+        List<AuditRecord> result = auditService.getByEntityId("entityId");
         assertFalse(result.isEmpty());
         AuditRecord createdAuditRecord = result.get(0);
         assertNotNull(createdAuditRecord);
         assertEquals("12 rules for life", createdAuditRecord.getMessage());
         assertEquals("Jordan Peterson", createdAuditRecord.getPayload());
-        assertEquals(2018, createdAuditRecord.getCreatedAt());
+        assertEquals(OffsetDateTime.parse("2022-03-03T14:33:33Z"), createdAuditRecord.getCreatedAt());
         assertEquals("978-0345816023", createdAuditRecord.getCorrelationId());
     }
 
@@ -68,7 +70,9 @@ class DefaultAuditRecordServiceIT {
     void testFindByPayload() throws DuplicateCorrelationIdException {
         auditService.create(createAudit("12 rules for life", "Jordan Peterson",
                                         OffsetDateTime.parse("2022-03-03'T'14:33:33+00:00"), "978-0345816023",
-                                        "externalRefId1"));
+                                        "entityId",
+                                        "externalRefId1",
+                                        "userId"));
         List<AuditRecord> auditRecords = auditService.getByPayload("Jordan Peterson");
 
         assertNotNull(auditRecords);
@@ -79,7 +83,9 @@ class DefaultAuditRecordServiceIT {
     void testFindByEntityIdAndPayload() throws DuplicateCorrelationIdException {
         auditService.create(createAudit("12 rules for life", "Jordan Peterson",
                                         OffsetDateTime.parse("2022-03-03'T'14:33:33+00:00"), "978-0345816023",
-                                        "externalRefId1"));
+                                        "entityId",
+                                        "externalRefId1",
+                                        "userId"));
         List<AuditRecord> auditRecords = auditService.findByEntityIdAndPayload("rules", "jordan");
 
         assertNotNull(auditRecords);
@@ -91,7 +97,9 @@ class DefaultAuditRecordServiceIT {
         AuditRecord createdAuditRecord =
                 auditService.create(createAudit("12 rules for life", "Jordan Peterson",
                                                 OffsetDateTime.parse("2022-03-03'T'14:33:33+00:00"), "978-0345816023",
-                                                "externalRefId1"));
+                                                "entityId",
+                                                "externalRefId1",
+                                                "userId"));
         assertNotNull(createdAuditRecord);
         assertNotNull(createdAuditRecord.getCorrelationId());
         assertEquals("12 rules for life", createdAuditRecord.getMessage());
@@ -149,12 +157,18 @@ class DefaultAuditRecordServiceIT {
         });
     }*/
 
-    private AuditRecord createAudit(String message, String payload, OffsetDateTime createdAt, String correlationId, String externalRefId) {
+    private AuditRecord createAudit(String message, String payload, OffsetDateTime createdAt, String correlationId,
+                                    String entityId,
+                                    String externalRefId,
+                                    String userId) {
         AuditRecord auditRecord = new AuditRecord();
         auditRecord.setMessage(message);
         auditRecord.setPayload(payload);
         auditRecord.setCreatedAt(createdAt);
         auditRecord.setCorrelationId(correlationId);
+        auditRecord.setEntityId(entityId);
+        auditRecord.setExternalRefId(externalRefId);
+        auditRecord.setUserId(userId);
         return auditRecord;
     }
 

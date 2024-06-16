@@ -28,10 +28,14 @@ public class DefaultAuditService implements AuditService {
     }
 
     @Override
-    public List<AuditRecord> getByEntityId(String externalRefId) {
-        return auditRepository.findByEntityId(externalRefId);
+    public List<AuditRecord> getByEntityId(String entityId) {
+        return auditRepository.findByEntityId(entityId);
     }
 
+    @Override
+    public boolean getByCorrelationId(String correlationId) {
+        return auditRepository.existsById(correlationId);
+    }
 
     @Override
     public List<AuditRecord> getByPayload(String payload) {
@@ -40,10 +44,11 @@ public class DefaultAuditService implements AuditService {
 
     @Override
     public AuditRecord create(AuditRecord auditRecord) throws DuplicateCorrelationIdException {
-        if (getByEntityId(auditRecord.getCorrelationId()).isEmpty()) {
+        if (!getByCorrelationId(auditRecord.getCorrelationId())) {
             return auditRepository.save(auditRecord);
         }
-        throw new DuplicateCorrelationIdException(String.format("The provided Correlation ID: %s already exists. Use update instead!", auditRecord.getCorrelationId()));
+        throw new DuplicateCorrelationIdException(String.format("The provided Correlation ID: %s already exists. " +
+                                                                        "Use update instead!", auditRecord.getCorrelationId()));
     }
 
     @Override

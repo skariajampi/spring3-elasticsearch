@@ -10,6 +10,8 @@ public interface AuditService {
 
     List<AuditRecord> getByEntityId(String entityId);
 
+    boolean getByCorrelationId(String correlationId);
+
     List<AuditRecord> getByPayload(String payload);
 
     AuditRecord create(AuditRecord auditRecord) throws DuplicateCorrelationIdException;

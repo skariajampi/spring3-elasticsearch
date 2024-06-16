@@ -33,8 +33,8 @@ public class AuditController {
 
     @ResponseStatus(HttpStatus.ACCEPTED)
     @PostMapping
-    public AuditRecord createAudit(@Valid @RequestBody AuditDto Audit) throws DuplicateCorrelationIdException {
-        return auditService.create(AuditDto.transform(Audit));
+    public AuditRecord createAudit(@Valid @RequestBody AuditDto auditDto) throws DuplicateCorrelationIdException {
+        return auditService.create(AuditDto.transform(auditDto));
     }
 
     @ResponseStatus(HttpStatus.OK)
